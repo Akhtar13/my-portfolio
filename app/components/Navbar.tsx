@@ -1,19 +1,23 @@
 'use client';
 
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {useState, useEffect} from "react";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
-function Navbar() {
+export default function Navbar() {
     const pathname = usePathname();
-    const [isDark, setIsDark] = useState(true);
+    const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
-        const darkMode = document.documentElement.classList.contains('dark');
-        setIsDark(darkMode);
-
-        const observer = new MutationObserver(() => {
+        // Initial check
+        const checkDarkMode = () => {
             setIsDark(document.documentElement.classList.contains('dark'));
+        };
+
+        checkDarkMode();
+
+        const observer = new MutationObserver((mutations: MutationRecord[]) => {
+            checkDarkMode();
         });
 
         observer.observe(document.documentElement, {
@@ -25,15 +29,14 @@ function Navbar() {
     }, []);
 
     const links = [
-        {href: "/", label: "Home"},
-        {href: "/about", label: "About"},
-        {href: "/projects", label: "Projects"},
-        {href: "/contact", label: "Contact"},
+        { href: "/", label: "Home" },
+        { href: "/about", label: "About" },
+        { href: "/projects", label: "Projects" },
+        { href: "/contact", label: "Contact" },
     ];
 
     return (
-        <nav
-            className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-500 ${isDark ? 'bg-gray-950/80 border-white/10' : 'bg-white/80 border-gray-200'}`}>
+        <nav className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-500 ${isDark ? 'bg-gray-950/80 border-white/10' : 'bg-white/80 border-gray-200'}`}>
             <div className="mx-auto max-w-5xl px-4 py-4">
                 <div className="flex items-center justify-between">
                     <Link
@@ -66,5 +69,3 @@ function Navbar() {
         </nav>
     );
 }
-
-export default Navbar

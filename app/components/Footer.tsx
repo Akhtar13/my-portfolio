@@ -3,15 +3,19 @@
 import {Github, Linkedin, Mail, Twitter} from "lucide-react";
 import {useState, useEffect} from "react";
 
-function Footer() {
-    const [isDark, setIsDark] = useState(true);
+export default function Footer() {
+    const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
-        const darkMode = document.documentElement.classList.contains('dark');
-        setIsDark(darkMode);
-
-        const observer = new MutationObserver(() => {
+        // Initial check
+        const checkDarkMode = () => {
             setIsDark(document.documentElement.classList.contains('dark'));
+        };
+
+        checkDarkMode();
+
+        const observer = new MutationObserver((mutations: MutationRecord[]) => {
+            checkDarkMode();
         });
 
         observer.observe(document.documentElement, {
@@ -56,5 +60,3 @@ function Footer() {
         </footer>
     );
 }
-
-export default Footer

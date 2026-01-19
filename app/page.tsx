@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Code, Zap, Layers } from 'lucide-react';
+import Link from "next/link";
 
 export default function HomePage() {
     const [isDark, setIsDark] = useState(true);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: MouseEvent) => {
             setMousePosition({ x: e.clientX, y: e.clientY });
         };
         window.addEventListener('mousemove', handleMouseMove);
@@ -84,18 +85,18 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex gap-4">
-                            <a
+                            <Link
                                 href="/projects"
                                 className={`px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
                             >
                                 View Projects
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 href="/contact"
                                 className={`px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 hover:scale-105 ${isDark ? 'bg-white/10 text-white border border-white/20' : 'bg-black/5 text-gray-900 border border-black/10'}`}
                             >
                                 Contact Me
-                            </a>
+                            </Link>
                         </div>
                     </div>
 
@@ -155,7 +156,7 @@ export default function HomePage() {
                     </h2>
                     <div className="grid gap-6 sm:grid-cols-2">
                         {featured.map((p) => (
-                            <a
+                            <Link
                                 href="/projects"
                                 key={p.slug}
                                 className={`group rounded-2xl backdrop-blur-xl p-6 border transition-all duration-300 hover:scale-105 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 shadow-lg shadow-emerald-600/10' : 'bg-white/70 border-white/40 hover:bg-white/90 shadow-lg shadow-emerald-400/10'}`}
@@ -180,7 +181,7 @@ export default function HomePage() {
                   See details
                   <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
                 </span>
-                            </a>
+                            </Link>
                         ))}
                     </div>
                 </div>
@@ -203,16 +204,6 @@ export default function HomePage() {
                     </div>
                 </div>
             </div>
-
-            <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.8s ease-out;
-        }
-      `}</style>
         </div>
     );
 }
