@@ -18,9 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" suppressHydrationWarning>
         <body className="min-h-screen transition-colors duration-500">
-        <Navbar />
+        {/*<Navbar />*/}
         <main>{children}</main>
-        <Footer />
+        {/*<Footer />*/}
         </body>
         </html>
     );
