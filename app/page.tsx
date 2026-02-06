@@ -218,9 +218,11 @@ function OnePagePortfolio() {
     }, [activeSection, isScrolling, sections]);
 
     const skills = [
-        {name: 'Next.js & React', icon: Code, level: 95},
-        {name: 'Laravel & PHP', icon: Zap, level: 90},
-        {name: 'Performance & UX', icon: Layers, level: 85}
+        { name: 'Laravel & PHP (Backend)', icon: Zap, level: 90 },
+        { name: 'Backend Architecture & Business Logic', icon: Layers, level: 85 },
+        { name: 'Payments & Checkout Systems', icon: Code, level: 80 },
+        { name: 'Frontend Integration (Blade / Next.js )', icon: Code, level: 60 },
+        { name: 'Node.js (NestJS)', icon: Zap, level: 55 }
     ];
 
     const projects = [
@@ -435,8 +437,8 @@ function OnePagePortfolio() {
                                     </StaggerItem>
                                     <StaggerItem>
                                         <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-lg`}>
-                                            I build scalable web products with Next.js and Laravel — focused on
-                                            performance, maintainability, and clean UX.
+                                            I specialize in building robust backend systems with Laravel, focusing on complex business logic, payments, multi-tenant architecture, and scalable APIs.
+                                            I’m also comfortable working with NestJS and Next.js to support frontend integration and deliver end-to-end solutions.
                                         </p>
                                     </StaggerItem>
                                 </div>
@@ -524,8 +526,9 @@ function OnePagePortfolio() {
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         {[
                                             {value: '3+', label: 'Years Exp'},
-                                            {value: '50+', label: 'Projects'},
-                                            {value: '20+', label: 'Clients'}
+                                            {value: '20+', label: 'Production Deployments'},
+                                            // {value: '10+', label: 'Business-Critical Flows'},
+                                            {value: '10+', label: 'Scalable Architectures'}
                                         ].map((stat, i) => (
                                             <motion.div
                                                 key={i}
