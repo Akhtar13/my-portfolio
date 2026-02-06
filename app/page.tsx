@@ -218,11 +218,11 @@ function OnePagePortfolio() {
     }, [activeSection, isScrolling, sections]);
 
     const skills = [
-        { name: 'Laravel & PHP (Backend)', icon: Zap, level: 90 },
-        { name: 'Backend Architecture & Business Logic', icon: Layers, level: 85 },
-        { name: 'Payments & Checkout Systems', icon: Code, level: 80 },
-        { name: 'Frontend Integration (Blade / Next.js )', icon: Code, level: 60 },
-        { name: 'Node.js (NestJS)', icon: Zap, level: 55 }
+        {name: 'Laravel & PHP (Backend)', icon: Zap, level: 90},
+        {name: 'Backend Architecture & Business Logic', icon: Layers, level: 85},
+        {name: 'Payments & Checkout Systems', icon: Code, level: 80},
+        {name: 'Frontend Integration (Blade / Next.js )', icon: Code, level: 60},
+        {name: 'Node.js (NestJS)', icon: Zap, level: 55}
     ];
 
     const projects = [
@@ -437,8 +437,11 @@ function OnePagePortfolio() {
                                     </StaggerItem>
                                     <StaggerItem>
                                         <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-lg`}>
-                                            I specialize in building robust backend systems with Laravel, focusing on complex business logic, payments, multi-tenant architecture, and scalable APIs.
-                                            I’m also comfortable working with NestJS and Next.js to support frontend integration and deliver end-to-end solutions.
+                                            I specialize in building robust backend systems with Laravel, focusing on
+                                            complex business logic, payments, multi-tenant architecture, and scalable
+                                            APIs.
+                                            I’m also comfortable working with NestJS and Next.js to support frontend
+                                            integration and deliver end-to-end solutions.
                                         </p>
                                     </StaggerItem>
                                 </div>
@@ -595,13 +598,19 @@ function OnePagePortfolio() {
                                         My Journey
                                     </h3>
                                     <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                        With over 3 years of experience in web development, I specialize in creating
-                                        high-performance, user-centric applications. My passion lies in transforming
-                                        complex problems into elegant, scalable solutions.
+                                        With over 3 years of experience in web development, I specialize in building and
+                                        maintaining backend-heavy systems using Laravel.
+                                    </p>
+                                    <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        My work focuses on complex business logic, payment and checkout flows,
+                                        multi-tenant architectures, and scalable APIs that power real production
+                                        applications.
                                     </p>
                                     <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                        I've worked with startups and established companies, delivering projects that
-                                        prioritize both technical excellence and exceptional user experience.
+                                        I’ve worked on long-running products where reliability, data integrity, and
+                                        clean system design matter more than surface-level features. I’m also
+                                        comfortable working with modern frontend stacks to ship complete, end-to-end
+                                        solutions when needed.
                                     </p>
                                 </motion.div>
                             </StaggerItem>
@@ -615,7 +624,27 @@ function OnePagePortfolio() {
                                         Technologies
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
-                                        {['Next.js', 'React', 'Laravel', 'PHP', 'Tailwind CSS', 'MySQL', 'PostgreSQL', 'Node.js', 'TypeScript', 'Git', 'Docker', 'AWS'].map((tech, i) => (
+                                        {[
+                                            // Backend
+                                            'Laravel',
+                                            'PHP',
+                                            'MySQL',
+                                            'PostgreSQL',
+
+                                            // Backend (Secondary)
+                                            'Node.js (NestJS)',
+
+                                            // Frontend
+                                            'Next.js',
+                                            'React',
+                                            'TypeScript',
+
+                                            // Tooling & Infra
+                                            'Docker',
+                                            'AWS',
+                                            'Git',
+                                            'Tailwind CSS'
+                                        ].map((tech, i) => (
                                             <motion.span
                                                 key={i}
                                                 initial={{opacity: 0, scale: 0}}
@@ -711,8 +740,8 @@ function OnePagePortfolio() {
                             className={`backdrop-blur-xl rounded-3xl p-8 md:p-12 border ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20'}`}
                         >
                             <p className={`text-center text-lg mb-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                I'm always open to discussing new projects, creative ideas, or opportunities to be part
-                                of your vision.
+                                I’m open to working on backend-heavy web applications, scalable systems, and long-term
+                                product development where reliability and clean architecture matter.
                             </p>
 
                             <div className="flex flex-wrap justify-center gap-4 mb-8">
