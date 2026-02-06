@@ -56,12 +56,127 @@ const StaggerItem = ({children, className = ""}: StaggerItemProps) => {
     );
 };
 
+type Project = {
+    title: string;
+    description: string;
+    stack: string[];
+    link: string;
+    details: string;
+    images: string[];
+};
+
+// Project Modal Component
+const ProjectModal = ({project, onClose, isDark}: {project: Project | null, onClose: () => void, isDark: boolean}) => {
+    if (!project) return null;
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                onClick={onClose}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
+            >
+                <motion.div
+                    initial={{scale: 0.9, opacity: 0, y: 20}}
+                    animate={{scale: 1, opacity: 1, y: 0}}
+                    exit={{scale: 0.9, opacity: 0, y: 20}}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 ${isDark ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'}`}
+                >
+                    {/* Close button */}
+                    <button
+                        onClick={onClose}
+                        className={`absolute top-4 right-4 p-2 rounded-full ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+
+                    {/* Content */}
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className={`text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                {project.title}
+                            </h2>
+                            <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {project.description}
+                            </p>
+                        </div>
+
+                        {/* Tech Stack */}
+                        <div>
+                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Technology Stack
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {project.stack.map((tech, i) => (
+                                    <span
+                                        key={i}
+                                        className={`rounded-full px-4 py-2 text-sm font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
+                                    >
+                                        {tech}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Details */}
+                        <div>
+                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Project Details
+                            </h3>
+                            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
+                                {project.details}
+                            </p>
+                        </div>
+
+                        {/* Screenshots */}
+                        <div>
+                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Screenshots
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {project.images.map((img, i) => (
+                                    <div
+                                        key={i}
+                                        className={`aspect-video rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-gray-50'}`}
+                                    >
+                                        <div className={`w-full h-full flex items-center justify-center ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+                                            {/* Placeholder - replace with actual images */}
+                                            <span className="text-sm">Screenshot {i + 1}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Call to action */}
+                        <div className="flex gap-4 pt-4">
+                            <a
+                                href={project.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white'}`}
+                            >
+                                View Live Project
+                                <ExternalLink className="w-4 h-4" />
+                            </a>
+                        </div>
+                    </div>
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
 function OnePagePortfolio() {
     const [isDark, setIsDark] = useState(true);
     const [mousePosition, setMousePosition] = useState({x: 0, y: 0});
     const [activeSection, setActiveSection] = useState(0);
     const [menuOpen, setMenuOpen] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     const sections = ['home', 'about', 'projects', 'contact'];
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -225,30 +340,38 @@ function OnePagePortfolio() {
         {name: 'Node.js (NestJS)', icon: Zap, level: 55}
     ];
 
-    const projects = [
+    const projects: Project[] = [
         {
             title: 'E-Commerce Platform',
             description: 'Full-stack marketplace with Next.js and Laravel backend, featuring real-time inventory management and secure payment processing.',
             stack: ['Next.js', 'Laravel', 'MySQL', 'Tailwind'],
-            link: '#'
+            link: '#',
+            details: 'Built a comprehensive e-commerce solution handling 10,000+ daily transactions. Implemented complex inventory management, multi-vendor support, and integrated with Stripe and PayPal for payment processing. The system includes real-time stock updates, automated order fulfillment, and advanced analytics dashboard for vendors.',
+            images: ['', '', '', '']
         },
         {
             title: 'SaaS Dashboard',
             description: 'Analytics dashboard with real-time data visualization, user management, and customizable reporting features.',
             stack: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],
-            link: '#'
+            link: '#',
+            details: 'Developed a multi-tenant SaaS platform serving 500+ businesses. Features include real-time analytics, custom report generation, role-based access control, and API integrations with popular business tools. Built with scalability in mind, handling millions of data points efficiently.',
+            images: ['', '', '', '']
         },
         {
             title: 'Corporate Website',
             description: 'Modern corporate website with CMS integration, blog functionality, and multilingual support.',
             stack: ['Next.js', 'Sanity', 'Tailwind', 'Vercel'],
-            link: '#'
+            link: '#',
+            details: 'Created a high-performance corporate website with headless CMS architecture. Implemented advanced SEO optimization, achieving 95+ Lighthouse scores. Features include dynamic content management, multi-language support for 5 languages, and integrated blog platform with rich media support.',
+            images: ['', '', '', '']
         },
         {
             title: 'Mobile App Backend',
             description: 'RESTful API backend for mobile applications with authentication, push notifications, and cloud storage.',
             stack: ['Laravel', 'Redis', 'AWS', 'Docker'],
-            link: '#'
+            link: '#',
+            details: 'Architected a robust API backend serving iOS and Android applications with 100,000+ active users. Implemented JWT authentication, real-time push notifications, file upload/management with S3, and optimized database queries for sub-100ms response times. Deployed on AWS with auto-scaling capabilities.',
+            images: ['', '', '', '']
         }
     ];
 
@@ -302,7 +425,7 @@ function OnePagePortfolio() {
                         left: `${mousePosition.x - 192}px`,
                         top: `${mousePosition.y - 192}px`,
                     }}
-                    transition={{type: "spring", damping: 30, stiffness: 200}}
+                    transition={{type: "spring", damping: 50, stiffness: 150, mass: 0.5}}
                 />
                 <motion.div
                     className={`absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10 ${isDark ? 'bg-teal-600' : 'bg-teal-400'}`}
@@ -416,6 +539,15 @@ function OnePagePortfolio() {
                 </div>
             </motion.nav>
 
+            {/* Project Modal - FIX #3 */}
+            {selectedProject && (
+                <ProjectModal
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                    isDark={isDark}
+                />
+            )}
+
             {/* Scroll Container */}
             <div className="snap-y snap-mandatory h-screen overflow-y-scroll scrollbar-hide">
                 {/* Hero Section */}
@@ -440,7 +572,7 @@ function OnePagePortfolio() {
                                             I specialize in building robust backend systems with Laravel, focusing on
                                             complex business logic, payments, multi-tenant architecture, and scalable
                                             APIs.
-                                            I’m also comfortable working with NestJS and Next.js to support frontend
+                                            I'm also comfortable working with NestJS and Next.js to support frontend
                                             integration and deliver end-to-end solutions.
                                         </p>
                                     </StaggerItem>
@@ -473,8 +605,8 @@ function OnePagePortfolio() {
                                 initial={{opacity: 0, scale: 0.8, rotateY: -20}}
                                 animate={{opacity: 1, scale: 1, rotateY: 0}}
                                 transition={{duration: 0.8, delay: 0.2}}
-                                whileHover={{scale: 1.02}}
-                                className={`relative backdrop-blur-xl rounded-3xl p-8 border transition-all duration-500 ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20'}`}
+                                className={`relative backdrop-blur-xl rounded-3xl p-8 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-2' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-2'}`}
+                                style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden', perspective: 1000}}
                             >
                                 <motion.div
                                     animate={{scale: [1, 1.2, 1]}}
@@ -530,7 +662,6 @@ function OnePagePortfolio() {
                                         {[
                                             {value: '3+', label: 'Years Exp'},
                                             {value: '20+', label: 'Production Deployments'},
-                                            // {value: '10+', label: 'Business-Critical Flows'},
                                             {value: '10+', label: 'Scalable Architectures'}
                                         ].map((stat, i) => (
                                             <motion.div
@@ -590,9 +721,9 @@ function OnePagePortfolio() {
 
                         <StaggerContainer className="grid lg:grid-cols-2 gap-12">
                             <StaggerItem>
-                                <motion.div
-                                    whileHover={{scale: 1.02, rotateY: 5}}
-                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-white/40'}`}
+                                <div
+                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
+                                    style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                 >
                                     <h3 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                         My Journey
@@ -607,39 +738,32 @@ function OnePagePortfolio() {
                                         applications.
                                     </p>
                                     <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                        I’ve worked on long-running products where reliability, data integrity, and
-                                        clean system design matter more than surface-level features. I’m also
+                                        I've worked on long-running products where reliability, data integrity, and
+                                        clean system design matter more than surface-level features. I'm also
                                         comfortable working with modern frontend stacks to ship complete, end-to-end
                                         solutions when needed.
                                     </p>
-                                </motion.div>
+                                </div>
                             </StaggerItem>
 
                             <StaggerItem>
-                                <motion.div
-                                    whileHover={{scale: 1.02, rotateY: -5}}
-                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/70 border-white/40'}`}
+                                <div
+                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
+                                    style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                 >
                                     <h3 className={`text-2xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                         Technologies
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
                                         {[
-                                            // Backend
                                             'Laravel',
                                             'PHP',
                                             'MySQL',
                                             'PostgreSQL',
-
-                                            // Backend (Secondary)
                                             'Node.js (NestJS)',
-
-                                            // Frontend
                                             'Next.js',
                                             'React',
                                             'TypeScript',
-
-                                            // Tooling & Infra
                                             'Docker',
                                             'AWS',
                                             'Git',
@@ -651,20 +775,20 @@ function OnePagePortfolio() {
                                                 whileInView={{opacity: 1, scale: 1}}
                                                 viewport={{once: false}}
                                                 transition={{delay: i * 0.05}}
-                                                whileHover={{scale: 1.1, rotate: 5}}
+                                                whileHover={{scale: 1.1}}
                                                 className={`px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
                                             >
                                                 {tech}
                                             </motion.span>
                                         ))}
                                     </div>
-                                </motion.div>
+                                </div>
                             </StaggerItem>
                         </StaggerContainer>
                     </div>
                 </section>
 
-                {/* Projects Section */}
+                {/* Projects Section - FIX #3: Added modal functionality */}
                 <section id="projects"
                          className="snap-start snap-always h-screen relative z-10 flex items-center overflow-y-auto scrollbar-hide">
                     <div className="max-w-6xl mx-auto px-4 w-full py-20">
@@ -680,10 +804,9 @@ function OnePagePortfolio() {
                         <StaggerContainer className="grid gap-6 md:grid-cols-2" staggerDelay={0.15}>
                             {projects.map((project, i) => (
                                 <StaggerItem key={i}>
-                                    <motion.div
-                                        whileHover={{scale: 1.03, y: -5}}
-                                        transition={{type: "spring", stiffness: 300}}
-                                        className={`group backdrop-blur-xl rounded-2xl p-6 border transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 shadow-lg shadow-emerald-600/10' : 'bg-white/70 border-white/40 hover:bg-white/90 shadow-lg shadow-emerald-400/10'}`}
+                                    <div
+                                        className={`group backdrop-blur-xl rounded-2xl p-6 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-emerald-600/50 shadow-lg shadow-emerald-600/10 hover:shadow-2xl hover:shadow-emerald-600/30 hover:-translate-y-2' : 'bg-white/70 border-white/40 hover:bg-white/90 hover:border-emerald-400/70 shadow-lg shadow-emerald-400/10 hover:shadow-2xl hover:shadow-emerald-400/30 hover:-translate-y-2'}`}
+                                        style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                     >
                                         <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                             {project.title}
@@ -705,15 +828,15 @@ function OnePagePortfolio() {
                                                 </motion.span>
                                             ))}
                                         </div>
-                                        <motion.a
+                                        <motion.button
                                             whileHover={{x: 5}}
-                                            href={project.link}
+                                            onClick={() => setSelectedProject(project)}
                                             className={`inline-flex items-center gap-2 text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
                                         >
-                                            View Project
+                                            View Details
                                             <ExternalLink className="w-4 h-4"/>
-                                        </motion.a>
-                                    </motion.div>
+                                        </motion.button>
+                                    </div>
                                 </StaggerItem>
                             ))}
                         </StaggerContainer>
@@ -737,10 +860,11 @@ function OnePagePortfolio() {
                             whileInView={{opacity: 1, scale: 1}}
                             viewport={{once: false, margin: "-100px"}}
                             transition={{duration: 0.5}}
-                            className={`backdrop-blur-xl rounded-3xl p-8 md:p-12 border ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20'}`}
+                            className={`backdrop-blur-xl rounded-3xl p-8 md:p-12 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-1' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-1'}`}
+                            style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                         >
                             <p className={`text-center text-lg mb-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                I’m open to working on backend-heavy web applications, scalable systems, and long-term
+                                I'm open to working on backend-heavy web applications, scalable systems, and long-term
                                 product development where reliability and clean architecture matter.
                             </p>
 
@@ -763,7 +887,7 @@ function OnePagePortfolio() {
                                 ].map((social, i) => (
                                     <motion.a
                                         key={i}
-                                        whileHover={{scale: 1.1, rotate: 5}}
+                                        whileHover={{scale: 1.1}}
                                         whileTap={{scale: 0.9}}
                                         href={social.href}
                                         target="_blank"
