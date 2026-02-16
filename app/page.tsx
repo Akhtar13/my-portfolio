@@ -3,7 +3,7 @@
 import type {ReactNode} from 'react';
 
 import React, {useState, useEffect, useRef} from 'react';
-import {Moon, Sun, Code, Zap, Layers, Mail, Github, Linkedin, ExternalLink, Menu, X, ChevronDown} from 'lucide-react';
+import {Moon, Sun, Code, Zap, Layers, Mail, Github, Linkedin, ExternalLink, Menu, X, ChevronDown, Download, MessageCircle, Instagram} from 'lucide-react';
 import {motion, useScroll, useTransform, useSpring, useInView, AnimatePresence} from 'framer-motion';
 
 type StaggerContainerProps = {
@@ -330,7 +330,7 @@ function OnePagePortfolio() {
         {name: 'Laravel & PHP (Backend)', icon: Zap, level: 90},
         {name: 'Backend Architecture & Business Logic', icon: Layers, level: 85},
         {name: 'Payments & Checkout Systems', icon: Code, level: 80},
-        {name: 'Frontend Integration (Blade / Next.js )', icon: Code, level: 60},
+        {name: 'Frontend Integration (Blade / Next.js)', icon: Code, level: 60},
         {name: 'Node.js (NestJS)', icon: Zap, level: 55}
     ];
 
@@ -340,32 +340,28 @@ function OnePagePortfolio() {
             description: 'Laravel-based bus booking platform with advanced seat validation, stop-based routing logic, and agent-specific controls.',
             stack: ['Laravel', 'MySQL', 'QR Code', 'REST APIs'],
             link: '#',
-            details: 'Developed a complete bus booking system with complex seat validation to prevent double booking across overlapping routes (A→B, B→C, A→C logic). Implemented stop-based ticketing, agent-specific seat blocking and custom pricing, QR-based ticket generation, and secure booking workflows. The system ensures real-time seat consistency and transactional integrity.',
-            // images: ['', '', '', '']
+            details: 'Developed a complete bus booking system with complex seat validation to prevent double booking across overlapping routes (A→B, B→C, A→C logic). Implemented stop-based ticketing, agent-specific seat blocking and custom pricing, QR-based ticket generation, and secure booking workflows. The system ensures real-time seat consistency and transactional integrity.'
         },
         {
             title: 'Multi-Tenant E-Commerce Platform',
             description: 'Full-scale e-commerce ecosystem with Admin, Merchant, and Reseller panels, including domain mapping and API-driven mobile support.',
-            stack: ['Laravel', 'MySQL', 'Stripe', 'Paypal', 'MyFatorah', 'Multi-Tenant Architecture'],
+            stack: ['Laravel', 'MySQL', 'Stripe', 'Paypal', 'MyFatoorah', 'Multi-Tenant Architecture'],
             link: '#',
-            details: 'Built a multi-tenant e-commerce platform with separate Admin, Merchant, and Reseller panels. Merchants can configure themes, connect custom domains, manage products, and control store settings. Implemented REST APIs for mobile apps, payment integrations, and scalable architecture to support multiple independent storefronts within a single system.',
-            // images: ['', '', '', '']
+            details: 'Built a multi-tenant e-commerce platform with separate Admin, Merchant, and Reseller panels. Merchants can configure themes, connect custom domains, manage products, and control store settings. Implemented REST APIs for mobile apps, payment integrations, and scalable architecture to support multiple independent storefronts within a single system.'
         },
         {
             title: 'Donation Management Platform',
             description: 'End-to-end donation platform with dynamic campaign creation, mobile APIs, and advanced logging systems.',
-            stack: ['Laravel', 'REST APIs', 'MySQL', 'MyFatorah', 'Queue System'],
+            stack: ['Laravel', 'REST APIs', 'MySQL', 'MyFatoorah', 'Queue System'],
             link: '#',
-            details: 'Developed a donation-based platform allowing users to create and manage campaigns, including child-focused donation initiatives. Built both web and mobile APIs, implemented dynamic email workflows, and maintained a structured logging system for tracking transactions and user activity. Designed to ensure reliability and transparency in donation flows.',
-            // images: ['', '', '', '']
+            details: 'Developed a donation-based platform allowing users to create and manage campaigns, including child-focused donation initiatives. Built both web and mobile APIs, implemented dynamic email workflows, and maintained a structured logging system for tracking transactions and user activity. Designed to ensure reliability and transparency in donation flows.'
         },
         {
             title: 'Service & Task Management System',
             description: 'Multi-role system with Admin, Company, Staff, and Vendor panels for task assignment and workflow management.',
             stack: ['Laravel', 'MySQL', 'Email Automation', 'Role-Based Access'],
             link: '#',
-            details: 'Created a service management system enabling companies to manage staff, assign tasks, set deadlines, and monitor workflow progress. Implemented role-based access control, automated email notifications, and structured task tracking features to improve operational efficiency.',
-            // images: ['', '', '', '']
+            details: 'Created a service management system enabling companies to manage staff, assign tasks, set deadlines, and monitor workflow progress. Implemented role-based access control, automated email notifications, and structured task tracking features to improve operational efficiency.'
         },
         {
             title: 'Dynamic CMS Platform',
@@ -411,6 +407,18 @@ function OnePagePortfolio() {
     const scrollToNext = () => {
         const nextSection = Math.min(sections.length - 1, activeSection + 1);
         scrollToSection(sections[nextSection]);
+    };
+
+    // Handle resume download
+    const handleDownloadResume = () => {
+        // Replace with your actual resume file path
+        const resumeUrl = '/akhtar-resume.pdf'; // Place your resume.pdf in the public folder
+        const link = document.createElement('a');
+        link.href = resumeUrl;
+        link.download = 'Akhtar_Diwan_Resume.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -476,7 +484,7 @@ function OnePagePortfolio() {
                             transition={{delay: 0.2}}
                             className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
                         >
-                            Akhtar
+                            Akhtar Diwan
                         </motion.h1>
 
                         {/* Desktop Menu */}
@@ -581,12 +589,12 @@ function OnePagePortfolio() {
                                 <div className="space-y-4">
                                     <StaggerItem>
                                         <p className={`text-lg ${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-semibold tracking-wide`}>
-                                            Hi, I'm Akhtar
+                                            Hi, I'm Akhtar Diwan
                                         </p>
                                     </StaggerItem>
                                     <StaggerItem>
                                         <h1 className={`text-5xl lg:text-6xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} leading-tight`}>
-                                            Web Developer
+                                            Backend Developer
                                         </h1>
                                     </StaggerItem>
                                     <StaggerItem>
@@ -601,7 +609,7 @@ function OnePagePortfolio() {
                                 </div>
 
                                 <StaggerItem>
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-wrap gap-4">
                                         <motion.button
                                             whileHover={{scale: 1.05}}
                                             whileTap={{scale: 0.95}}
@@ -613,10 +621,11 @@ function OnePagePortfolio() {
                                         <motion.button
                                             whileHover={{scale: 1.05}}
                                             whileTap={{scale: 0.95}}
-                                            onClick={() => scrollToSection('contact')}
-                                            className={`px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20' : 'bg-black/5 text-gray-900 border border-black/10'}`}
+                                            onClick={handleDownloadResume}
+                                            className={`flex items-center gap-2 px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
                                         >
-                                            Contact Me
+                                            <Download className="w-5 h-5"/>
+                                            Resume
                                         </motion.button>
                                     </div>
                                 </StaggerItem>
@@ -683,8 +692,8 @@ function OnePagePortfolio() {
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         {[
                                             {value: '3+', label: 'Years Exp'},
-                                            {value: '20+', label: 'Production Deployments'},
-                                            {value: '10+', label: 'Scalable Architectures'}
+                                            {value: '20+', label: 'Projects'},
+                                            {value: '10+', label: 'Technologies'}
                                         ].map((stat, i) => (
                                             <motion.div
                                                 key={i}
@@ -782,14 +791,17 @@ function OnePagePortfolio() {
                                             'PHP',
                                             'MySQL',
                                             'PostgreSQL',
-                                            'Node.js (NestJS)',
+                                            'Node.js',
+                                            'NestJS',
                                             'Next.js',
                                             'React',
                                             'TypeScript',
                                             'Docker',
                                             'AWS',
                                             'Git',
-                                            'Tailwind CSS'
+                                            'Tailwind CSS',
+                                            'Redis',
+                                            'Queue Systems'
                                         ].map((tech, i) => (
                                             <motion.span
                                                 key={i}
@@ -894,18 +906,29 @@ function OnePagePortfolio() {
                                 <motion.a
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}
-                                    href="mailto:your.email@example.com"
+                                    href="mailto:diwanakhtar34@gmail.com"
                                     className={`flex items-center gap-3 px-8 py-4 rounded-full font-semibold transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
                                 >
                                     <Mail className="w-5 h-5"/>
                                     Email Me
                                 </motion.a>
+                                <motion.button
+                                    whileHover={{scale: 1.05}}
+                                    whileTap={{scale: 0.95}}
+                                    onClick={handleDownloadResume}
+                                    className={`flex items-center gap-3 px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
+                                >
+                                    <Download className="w-5 h-5"/>
+                                    Download Resume
+                                </motion.button>
                             </div>
 
-                            <div className="flex justify-center gap-6">
+                            <div className="flex justify-center gap-4">
                                 {[
-                                    {icon: Github, href: 'https://github.com'},
-                                    {icon: Linkedin, href: 'https://linkedin.com'}
+                                    {icon: Github, href: 'https://github.com/Akhtar13', label: 'GitHub'},
+                                    {icon: Linkedin, href: 'https://www.linkedin.com/in/akhtar-diwan-b69413237', label: 'LinkedIn'},
+                                    {icon: MessageCircle, href: 'https://wa.me/918200699533', label: 'WhatsApp'},
+                                    {icon: Instagram, href: 'https://www.instagram.com/akhtar_diwan', label: 'Instagram'}
                                 ].map((social, i) => (
                                     <motion.a
                                         key={i}
@@ -915,6 +938,7 @@ function OnePagePortfolio() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className={`p-4 rounded-full backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-emerald-400 hover:bg-white/20' : 'bg-black/5 text-emerald-600 hover:bg-black/10'}`}
+                                        aria-label={social.label}
                                     >
                                         <social.icon className="w-6 h-6"/>
                                     </motion.a>
@@ -930,7 +954,7 @@ function OnePagePortfolio() {
                             className="mt-12 text-center"
                         >
                             <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                © 2026 Akhtar. Built with Next.js & Tailwind CSS
+                                © 2026 Akhtar Diwan. Built with Next.js & Tailwind CSS
                             </p>
                         </motion.div>
                     </div>
