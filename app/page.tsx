@@ -62,11 +62,15 @@ type Project = {
     stack: string[];
     link: string;
     details: string;
-    images: string[];
+    images?: string[];
 };
 
 // Project Modal Component
-const ProjectModal = ({project, onClose, isDark}: {project: Project | null, onClose: () => void, isDark: boolean}) => {
+const ProjectModal = ({project, onClose, isDark}: {
+    project: Project | null,
+    onClose: () => void,
+    isDark: boolean
+}) => {
     if (!project) return null;
 
     return (
@@ -90,7 +94,7 @@ const ProjectModal = ({project, onClose, isDark}: {project: Project | null, onCl
                         onClick={onClose}
                         className={`absolute top-4 right-4 p-2 rounded-full ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-5 h-5"/>
                     </button>
 
                     {/* Content */}
@@ -131,38 +135,28 @@ const ProjectModal = ({project, onClose, isDark}: {project: Project | null, onCl
                             </p>
                         </div>
 
-                        {/* Screenshots */}
-                        <div>
-                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                Screenshots
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {project.images.map((img, i) => (
-                                    <div
-                                        key={i}
-                                        className={`aspect-video rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-gray-50'}`}
-                                    >
-                                        <div className={`w-full h-full flex items-center justify-center ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
-                                            {/* Placeholder - replace with actual images */}
-                                            <span className="text-sm">Screenshot {i + 1}</span>
+                        {/* Screenshots - Only render if images array exists and has items */}
+                        {project.images && project.images.length > 0 && (
+                            <div>
+                                <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    Screenshots
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {project.images.map((img, i) => (
+                                        <div
+                                            key={i}
+                                            className={`aspect-video rounded-xl overflow-hidden border ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-gray-50'}`}
+                                        >
+                                            <div
+                                                className={`w-full h-full flex items-center justify-center ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                {/* Placeholder - replace with actual images */}
+                                                <span className="text-sm">Screenshot {i + 1}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Call to action */}
-                        <div className="flex gap-4 pt-4">
-                            <a
-                                href={project.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white'}`}
-                            >
-                                View Live Project
-                                <ExternalLink className="w-4 h-4" />
-                            </a>
-                        </div>
+                        )}
                     </div>
                 </motion.div>
             </motion.div>
@@ -342,36 +336,64 @@ function OnePagePortfolio() {
 
     const projects: Project[] = [
         {
-            title: 'E-Commerce Platform',
-            description: 'Full-stack marketplace with Next.js and Laravel backend, featuring real-time inventory management and secure payment processing.',
-            stack: ['Next.js', 'Laravel', 'MySQL', 'Tailwind'],
+            title: 'Bus Reservation & Ticketing System',
+            description: 'Laravel-based bus booking platform with advanced seat validation, stop-based routing logic, and agent-specific controls.',
+            stack: ['Laravel', 'MySQL', 'QR Code', 'REST APIs'],
             link: '#',
-            details: 'Built a comprehensive e-commerce solution handling 10,000+ daily transactions. Implemented complex inventory management, multi-vendor support, and integrated with Stripe and PayPal for payment processing. The system includes real-time stock updates, automated order fulfillment, and advanced analytics dashboard for vendors.',
-            images: ['', '', '', '']
+            details: 'Developed a complete bus booking system with complex seat validation to prevent double booking across overlapping routes (A→B, B→C, A→C logic). Implemented stop-based ticketing, agent-specific seat blocking and custom pricing, QR-based ticket generation, and secure booking workflows. The system ensures real-time seat consistency and transactional integrity.',
+            // images: ['', '', '', '']
         },
         {
-            title: 'SaaS Dashboard',
-            description: 'Analytics dashboard with real-time data visualization, user management, and customizable reporting features.',
-            stack: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],
+            title: 'Multi-Tenant E-Commerce Platform',
+            description: 'Full-scale e-commerce ecosystem with Admin, Merchant, and Reseller panels, including domain mapping and API-driven mobile support.',
+            stack: ['Laravel', 'MySQL', 'Stripe', 'Paypal', 'MyFatorah', 'Multi-Tenant Architecture'],
             link: '#',
-            details: 'Developed a multi-tenant SaaS platform serving 500+ businesses. Features include real-time analytics, custom report generation, role-based access control, and API integrations with popular business tools. Built with scalability in mind, handling millions of data points efficiently.',
-            images: ['', '', '', '']
+            details: 'Built a multi-tenant e-commerce platform with separate Admin, Merchant, and Reseller panels. Merchants can configure themes, connect custom domains, manage products, and control store settings. Implemented REST APIs for mobile apps, payment integrations, and scalable architecture to support multiple independent storefronts within a single system.',
+            // images: ['', '', '', '']
         },
         {
-            title: 'Corporate Website',
-            description: 'Modern corporate website with CMS integration, blog functionality, and multilingual support.',
-            stack: ['Next.js', 'Sanity', 'Tailwind', 'Vercel'],
+            title: 'Donation Management Platform',
+            description: 'End-to-end donation platform with dynamic campaign creation, mobile APIs, and advanced logging systems.',
+            stack: ['Laravel', 'REST APIs', 'MySQL', 'MyFatorah', 'Queue System'],
             link: '#',
-            details: 'Created a high-performance corporate website with headless CMS architecture. Implemented advanced SEO optimization, achieving 95+ Lighthouse scores. Features include dynamic content management, multi-language support for 5 languages, and integrated blog platform with rich media support.',
-            images: ['', '', '', '']
+            details: 'Developed a donation-based platform allowing users to create and manage campaigns, including child-focused donation initiatives. Built both web and mobile APIs, implemented dynamic email workflows, and maintained a structured logging system for tracking transactions and user activity. Designed to ensure reliability and transparency in donation flows.',
+            // images: ['', '', '', '']
         },
         {
-            title: 'Mobile App Backend',
-            description: 'RESTful API backend for mobile applications with authentication, push notifications, and cloud storage.',
-            stack: ['Laravel', 'Redis', 'AWS', 'Docker'],
+            title: 'Service & Task Management System',
+            description: 'Multi-role system with Admin, Company, Staff, and Vendor panels for task assignment and workflow management.',
+            stack: ['Laravel', 'MySQL', 'Email Automation', 'Role-Based Access'],
             link: '#',
-            details: 'Architected a robust API backend serving iOS and Android applications with 100,000+ active users. Implemented JWT authentication, real-time push notifications, file upload/management with S3, and optimized database queries for sub-100ms response times. Deployed on AWS with auto-scaling capabilities.',
-            images: ['', '', '', '']
+            details: 'Created a service management system enabling companies to manage staff, assign tasks, set deadlines, and monitor workflow progress. Implemented role-based access control, automated email notifications, and structured task tracking features to improve operational efficiency.',
+            // images: ['', '', '', '']
+        },
+        {
+            title: 'Dynamic CMS Platform',
+            description: 'Content-driven web application with custom admin panel for managing dynamic frontend pages.',
+            stack: ['Laravel', 'MySQL', 'Blade', 'REST API'],
+            link: '#',
+            details: 'Developed a content management system allowing administrators to dynamically create and manage frontend pages, sections, and content blocks. Implemented structured database-driven layouts, media handling, and role-based access control for content editing.'
+        },
+        {
+            title: 'E-Commerce REST API (Node.js)',
+            description: 'Backend API layer for product management, cart operations, and order processing.',
+            stack: ['Node.js', 'NestJS', 'PostgreSQL', 'JWT'],
+            link: '#',
+            details: 'Built RESTful APIs supporting product catalogs, cart management, order workflows, and authentication. Designed modular service architecture with middleware-based validation and secure token-based authentication.'
+        },
+        {
+            title: 'Custom Frontend Implementations',
+            description: 'Multiple frontend builds using Next.js integrated with API-driven backends.',
+            stack: ['Next.js', 'React', 'Tailwind CSS'],
+            link: '#',
+            details: 'Implemented responsive, API-integrated frontend interfaces for various web applications. Focused on performance, clean UI structure, and seamless backend integration.'
+        },
+        {
+            title: 'System Architecture & Integrations',
+            description: 'Backend architecture design, payment integrations, and scalable system orchestration across multiple production applications.',
+            stack: ['Laravel', 'Stripe', 'MyFatoorah', 'Queues', 'Cloudflare', 'AWS'],
+            link: '#',
+            details: 'Designed and implemented backend architectures for production-grade applications, focusing on clean service structure, scalable database design, and modular business logic. Integrated multiple payment gateways with webhook handling, subscription renewals, and multi-currency support. Implemented queue-based processing, domain mapping with SSL provisioning, and deployment workflows to ensure reliability and maintainability.'
         }
     ];
 
@@ -539,7 +561,7 @@ function OnePagePortfolio() {
                 </div>
             </motion.nav>
 
-            {/* Project Modal - FIX #3 */}
+            {/* Project Modal */}
             {selectedProject && (
                 <ProjectModal
                     project={selectedProject}
@@ -788,7 +810,7 @@ function OnePagePortfolio() {
                     </div>
                 </section>
 
-                {/* Projects Section - FIX #3: Added modal functionality */}
+                {/* Projects Section */}
                 <section id="projects"
                          className="snap-start snap-always h-screen relative z-10 flex items-center overflow-y-auto scrollbar-hide">
                     <div className="max-w-6xl mx-auto px-4 w-full py-20">
