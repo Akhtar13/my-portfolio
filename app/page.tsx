@@ -3,7 +3,7 @@
 import type {ReactNode} from 'react';
 
 import React, {useState, useEffect, useRef} from 'react';
-import {Moon, Sun, Code, Zap, Layers, Mail, Github, Linkedin, ExternalLink, Menu, X, ChevronDown, Download, MessageCircle, Instagram} from 'lucide-react';
+import {Moon, Sun, Code, Zap, Layers, Mail, Github, Linkedin, ExternalLink, Menu, X, ChevronDown, ChevronLeft, ChevronRight, Download, MessageCircle, Instagram} from 'lucide-react';
 import {motion, useScroll, useTransform, useSpring, useInView, AnimatePresence} from 'framer-motion';
 
 type StaggerContainerProps = {
@@ -188,6 +188,8 @@ function OnePagePortfolio() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+    const [carouselDirection, setCarouselDirection] = useState(0);
     const isMobile = useIsMobile();
 
     const sections = ['home', 'about', 'projects', 'contact'];
@@ -414,6 +416,88 @@ function OnePagePortfolio() {
             details: 'Designed and implemented backend architectures for production-grade applications, focusing on clean service structure, scalable database design, and modular business logic. Integrated multiple payment gateways with webhook handling, subscription renewals, and multi-currency support. Implemented queue-based processing, domain mapping with SSL provisioning, and deployment workflows to ensure reliability and maintainability.'
         }
     ];
+
+    // Carousel navigation functions
+    const nextProject = () => {
+        setCarouselDirection(1);
+        setCurrentProjectIndex((prev) => (prev + 1) % projects.length);
+    };
+
+    const prevProject = () => {
+        setCarouselDirection(-1);
+        setCurrentProjectIndex((prev) => (prev - 1 + projects.length) % projects.length);
+    };
+
+    const goToProject = (index: number) => {
+        setCarouselDirection(index > currentProjectIndex ? 1 : -1);
+        setCurrentProjectIndex(index);
+    };
+
+    // Auto-play carousel (optional - can be disabled)
+    useEffect(() => {
+        const autoPlayInterval = setInterval(() => {
+            nextProject();
+        }, 5000); // Change slide every 5 seconds
+
+        return () => clearInterval(autoPlayInterval);
+    }, [currentProjectIndex]);
+
+    // Keyboard navigation for carousel
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                prevProject();
+            } else if (e.key === 'ArrowRight') {
+                nextProject();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, []);
+
+    // Touch swipe support for carousel
+    useEffect(() => {
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStartX = e.changedTouches[0].screenX;
+        };
+
+        const handleTouchEnd = (e: TouchEvent) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        };
+
+        const handleSwipe = () => {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swiped left - go to next
+                    nextProject();
+                } else {
+                    // Swiped right - go to previous
+                    prevProject();
+                }
+            }
+        };
+
+        const projectSection = document.getElementById('projects');
+        if (projectSection) {
+            projectSection.addEventListener('touchstart', handleTouchStart, {passive: true});
+            projectSection.addEventListener('touchend', handleTouchEnd, {passive: true});
+        }
+
+        return () => {
+            if (projectSection) {
+                projectSection.removeEventListener('touchstart', handleTouchStart);
+                projectSection.removeEventListener('touchend', handleTouchEnd);
+            }
+        };
+    }, [currentProjectIndex]);
 
     const scrollToSection = (sectionId: string) => {
         const element = document.getElementById(sectionId);
@@ -846,58 +930,308 @@ function OnePagePortfolio() {
                     </div>
                 </section>
 
-                {/* Projects Section */}
+                {/* Projects Section - 3D Card Stack Carousel */}
                 <section id="projects"
-                         className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen overflow-y-auto'} relative z-10 flex items-center scrollbar-hide py-20 md:py-0 px-4`}>
-                    <div className="max-w-6xl mx-auto w-full">
-                        <motion.h2
+                         className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen'} relative z-10 flex items-center py-20 md:py-0 px-4 overflow-hidden`}>
+                    <div className="max-w-7xl mx-auto w-full">
+                        <motion.div
                             initial={{opacity: 0, y: 20}}
                             whileInView={{opacity: 1, y: 0}}
                             viewport={{once: false, margin: "-100px"}}
-                            className={`text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                            className="text-center mb-12 md:mb-16"
                         >
-                            Featured Projects
-                        </motion.h2>
+                            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                Featured Projects
+                            </h2>
+                            <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Swipe, click arrows, or use keyboard to explore • {currentProjectIndex + 1} of {projects.length}
+                            </p>
+                        </motion.div>
 
-                        <StaggerContainer className="grid gap-4 md:gap-6 md:grid-cols-2" staggerDelay={0.15}>
-                            {projects.map((project, i) => (
-                                <StaggerItem key={i}>
-                                    <div
-                                        className={`group backdrop-blur-xl rounded-xl md:rounded-2xl p-5 md:p-6 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-emerald-600/50 shadow-lg shadow-emerald-600/10 hover:shadow-2xl hover:shadow-emerald-600/30 hover:-translate-y-2' : 'bg-white/70 border-white/40 hover:bg-white/90 hover:border-emerald-400/70 shadow-lg shadow-emerald-400/10 hover:shadow-2xl hover:shadow-emerald-400/30 hover:-translate-y-2'}`}
-                                        style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
-                                    >
-                                        <h3 className={`text-lg md:text-xl font-semibold mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                            {project.title}
-                                        </h3>
-                                        <p className={`text-xs md:text-sm mb-3 md:mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                            {project.description}
-                                        </p>
-                                        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-4">
-                                            {project.stack.map((tech, techIndex) => (
-                                                <motion.span
-                                                    key={tech}
-                                                    initial={{opacity: 0, scale: 0}}
-                                                    whileInView={{opacity: 1, scale: 1}}
-                                                    viewport={{once: false}}
-                                                    transition={{delay: techIndex * 0.05}}
-                                                    className={`rounded-full px-2 md:px-3 py-1 text-[10px] md:text-xs font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
-                                                >
-                                                    {tech}
-                                                </motion.span>
-                                            ))}
-                                        </div>
-                                        <motion.button
-                                            whileHover={{x: 5}}
-                                            onClick={() => setSelectedProject(project)}
-                                            className={`inline-flex items-center gap-2 text-xs md:text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
+                        {/* 3D Card Stack Container */}
+                        <div className="relative h-[500px] md:h-[600px] flex items-center justify-center perspective-[2000px]">
+                            <AnimatePresence initial={false} custom={carouselDirection}>
+                                {projects.map((project, index) => {
+                                    const offset = index - currentProjectIndex;
+                                    const isActive = index === currentProjectIndex;
+                                    const isPrev = offset === -1;
+                                    const isNext = offset === 1;
+                                    const isVisible = Math.abs(offset) <= 1;
+
+                                    if (!isVisible && Math.abs(offset) > 2) return null;
+
+                                    return (
+                                        <motion.div
+                                            key={index}
+                                            custom={offset}
+                                            initial={{
+                                                scale: 0.8,
+                                                opacity: 0,
+                                                x: offset > 0 ? 1000 : -1000,
+                                                rotateY: offset > 0 ? 45 : -45,
+                                                z: -500
+                                            }}
+                                            animate={{
+                                                scale: isActive ? 1 : 0.85,
+                                                opacity: isActive ? 1 : isVisible ? 0.5 : 0,
+                                                x: offset * (isMobile ? 280 : 350),
+                                                y: Math.abs(offset) * 20,
+                                                z: isActive ? 0 : -Math.abs(offset) * 300,
+                                                rotateY: offset * (isMobile ? 20 : 25),
+                                                rotateX: isActive ? 0 : -10,
+                                                filter: isActive ? 'blur(0px)' : `blur(${Math.abs(offset) * 2}px)`,
+                                            }}
+                                            exit={{
+                                                scale: 0.8,
+                                                opacity: 0,
+                                                x: offset < 0 ? -1000 : 1000,
+                                                rotateY: offset < 0 ? -45 : 45,
+                                                z: -500
+                                            }}
+                                            transition={{
+                                                type: "spring",
+                                                stiffness: 260,
+                                                damping: 30,
+                                                mass: 0.8
+                                            }}
+                                            style={{
+                                                position: 'absolute',
+                                                width: isMobile ? '85%' : '70%',
+                                                maxWidth: '650px',
+                                                transformStyle: 'preserve-3d',
+                                                pointerEvents: isActive ? 'auto' : 'none',
+                                                zIndex: isActive ? 50 : 10 - Math.abs(offset)
+                                            }}
+                                            onClick={() => {
+                                                if (!isActive) {
+                                                    goToProject(index);
+                                                }
+                                            }}
                                         >
-                                            View Details
-                                            <ExternalLink className="w-3 h-3 md:w-4 md:h-4"/>
-                                        </motion.button>
-                                    </div>
-                                </StaggerItem>
+                                            <motion.div
+                                                whileHover={isActive ? {scale: 1.02} : {}}
+                                                className={`relative rounded-2xl md:rounded-3xl p-6 md:p-8 border backdrop-blur-xl transition-all duration-500 cursor-pointer ${
+                                                    isDark
+                                                        ? 'bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 border-white/10 shadow-2xl'
+                                                        : 'bg-gradient-to-br from-white/95 via-gray-50/95 to-white/95 border-gray-200 shadow-2xl'
+                                                } ${isActive ? 'shadow-emerald-600/40' : 'shadow-black/20'}`}
+                                                style={{
+                                                    transformStyle: 'preserve-3d',
+                                                    backfaceVisibility: 'hidden'
+                                                }}
+                                            >
+                                                {/* Glow Effect for Active Card */}
+                                                {isActive && (
+                                                    <motion.div
+                                                        className="absolute inset-0 rounded-2xl md:rounded-3xl bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 blur-xl"
+                                                        animate={{
+                                                            opacity: [0.5, 0.8, 0.5],
+                                                            scale: [0.98, 1.02, 0.98]
+                                                        }}
+                                                        transition={{
+                                                            duration: 3,
+                                                            repeat: Infinity,
+                                                            ease: "easeInOut"
+                                                        }}
+                                                        style={{zIndex: -1}}
+                                                    />
+                                                )}
+
+                                                {/* Project Number Badge */}
+                                                <div className="absolute -top-4 -right-4 z-20">
+                                                    <motion.div
+                                                        initial={{scale: 0, rotate: -180}}
+                                                        animate={{scale: isActive ? 1 : 0.8, rotate: 0}}
+                                                        className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-lg md:text-xl font-bold backdrop-blur-xl border-2 ${
+                                                            isDark
+                                                                ? 'bg-emerald-600/90 text-white border-emerald-400/50'
+                                                                : 'bg-emerald-500/90 text-white border-emerald-300/50'
+                                                        } shadow-lg`}
+                                                    >
+                                                        {index + 1}
+                                                    </motion.div>
+                                                </div>
+
+                                                {/* Content */}
+                                                <motion.div
+                                                    animate={{
+                                                        opacity: isActive ? 1 : 0.6
+                                                    }}
+                                                    className="space-y-4 md:space-y-6"
+                                                >
+                                                    {/* Title */}
+                                                    <div>
+                                                        <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                            {project.title}
+                                                        </h3>
+                                                        <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
+                                                            {project.description}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Tech Stack Pills */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {project.stack.slice(0, 4).map((tech, i) => (
+                                                            <motion.span
+                                                                key={tech}
+                                                                initial={{scale: 0, opacity: 0}}
+                                                                animate={{
+                                                                    scale: isActive ? 1 : 0.9,
+                                                                    opacity: isActive ? 1 : 0.7
+                                                                }}
+                                                                transition={{delay: i * 0.1}}
+                                                                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold backdrop-blur-md ${
+                                                                    isDark
+                                                                        ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/30'
+                                                                        : 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                                                                }`}
+                                                            >
+                                                                {tech}
+                                                            </motion.span>
+                                                        ))}
+                                                        {project.stack.length > 4 && (
+                                                            <span className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                                +{project.stack.length - 4} more
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Details (Only show on active card) */}
+                                                    {isActive && (
+                                                        <motion.div
+                                                            initial={{opacity: 0, height: 0}}
+                                                            animate={{opacity: 1, height: 'auto'}}
+                                                            exit={{opacity: 0, height: 0}}
+                                                            transition={{duration: 0.3}}
+                                                        >
+                                                            <p className={`text-xs md:text-sm leading-relaxed line-clamp-3 md:line-clamp-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                                {project.details}
+                                                            </p>
+                                                        </motion.div>
+                                                    )}
+
+                                                    {/* Action Button (Only on active card) */}
+                                                    {isActive && (
+                                                        <motion.button
+                                                            initial={{opacity: 0, y: 20}}
+                                                            animate={{opacity: 1, y: 0}}
+                                                            transition={{delay: 0.2}}
+                                                            whileHover={{scale: 1.05, boxShadow: '0 10px 40px rgba(16, 185, 129, 0.4)'}}
+                                                            whileTap={{scale: 0.95}}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedProject(project);
+                                                            }}
+                                                            className={`w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-base transition-all duration-300 flex items-center justify-center gap-2 ${
+                                                                isDark
+                                                                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50'
+                                                                    : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'
+                                                            }`}
+                                                        >
+                                                            View Full Details
+                                                            <ExternalLink className="w-4 h-4 md:w-5 md:h-5"/>
+                                                        </motion.button>
+                                                    )}
+                                                </motion.div>
+                                            </motion.div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </AnimatePresence>
+
+                            {/* Navigation Arrows - Floating Style */}
+                            <motion.button
+                                whileHover={{scale: 1.1, x: -5}}
+                                whileTap={{scale: 0.9}}
+                                onClick={prevProject}
+                                className={`absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 p-4 md:p-5 rounded-full backdrop-blur-2xl transition-all duration-300 group ${
+                                    isDark
+                                        ? 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
+                                        : 'bg-black/10 hover:bg-black/20 border border-black/20 text-gray-900'
+                                } shadow-2xl`}
+                                aria-label="Previous project"
+                            >
+                                <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform"/>
+                            </motion.button>
+
+                            <motion.button
+                                whileHover={{scale: 1.1, x: 5}}
+                                whileTap={{scale: 0.9}}
+                                onClick={nextProject}
+                                className={`absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 p-4 md:p-5 rounded-full backdrop-blur-2xl transition-all duration-300 group ${
+                                    isDark
+                                        ? 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
+                                        : 'bg-black/10 hover:bg-black/20 border border-black/20 text-gray-900'
+                                } shadow-2xl`}
+                                aria-label="Next project"
+                            >
+                                <ChevronRight className="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform"/>
+                            </motion.button>
+                        </div>
+
+                        {/* Progress Indicators */}
+                        <motion.div
+                            initial={{opacity: 0, y: 20}}
+                            animate={{opacity: 1, y: 0}}
+                            transition={{delay: 0.3}}
+                            className="flex justify-center items-center gap-3 mt-8 md:mt-12"
+                        >
+                            {projects.map((_, index) => (
+                                <motion.button
+                                    key={index}
+                                    whileHover={{scale: 1.3}}
+                                    whileTap={{scale: 0.9}}
+                                    onClick={() => goToProject(index)}
+                                    className="relative group"
+                                    aria-label={`Go to project ${index + 1}`}
+                                >
+                                    <motion.div
+                                        animate={{
+                                            scale: index === currentProjectIndex ? 1 : 0.7,
+                                            opacity: index === currentProjectIndex ? 1 : 0.5
+                                        }}
+                                        className={`relative rounded-full transition-all duration-300 ${
+                                            index === currentProjectIndex
+                                                ? isDark
+                                                    ? 'w-12 md:w-16 h-3 md:h-4 bg-gradient-to-r from-emerald-500 to-teal-500'
+                                                    : 'w-12 md:w-16 h-3 md:h-4 bg-gradient-to-r from-emerald-500 to-teal-500'
+                                                : isDark
+                                                    ? 'w-3 md:w-4 h-3 md:h-4 bg-white/30 group-hover:bg-white/50'
+                                                    : 'w-3 md:w-4 h-3 md:h-4 bg-gray-400 group-hover:bg-gray-600'
+                                        }`}
+                                    />
+                                    {index === currentProjectIndex && (
+                                        <motion.div
+                                            layoutId="activeIndicator"
+                                            className={`absolute inset-0 rounded-full ${
+                                                isDark ? 'bg-emerald-400/50' : 'bg-emerald-500/50'
+                                            } blur-md`}
+                                        />
+                                    )}
+                                </motion.button>
                             ))}
-                        </StaggerContainer>
+                        </motion.div>
+
+                        {/* Keyboard Hints */}
+                        <motion.div
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            transition={{delay: 0.5}}
+                            className="text-center mt-6"
+                        >
+                            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md ${
+                                isDark ? 'bg-white/5 border border-white/10' : 'bg-black/5 border border-black/10'
+                            }`}>
+                                <div className={`flex items-center gap-1 px-2 py-1 rounded ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
+                                    <ChevronLeft className="w-3 h-3"/>
+                                </div>
+                                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>or</span>
+                                <div className={`flex items-center gap-1 px-2 py-1 rounded ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
+                                    <ChevronRight className="w-3 h-3"/>
+                                </div>
+                                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>to navigate</span>
+                            </div>
+                        </motion.div>
                     </div>
                 </section>
 
