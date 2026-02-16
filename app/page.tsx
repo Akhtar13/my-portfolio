@@ -56,6 +56,23 @@ const StaggerItem = ({children, className = ""}: StaggerItemProps) => {
     );
 };
 
+// Hook to detect mobile
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    return isMobile;
+};
+
 type Project = {
     title: string;
     description: string;
@@ -87,12 +104,12 @@ const ProjectModal = ({project, onClose, isDark}: {
                     animate={{scale: 1, opacity: 1, y: 0}}
                     exit={{scale: 0.9, opacity: 0, y: 20}}
                     onClick={(e) => e.stopPropagation()}
-                    className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 ${isDark ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'}`}
+                    className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl md:rounded-3xl p-6 md:p-8 ${isDark ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'}`}
                 >
                     {/* Close button */}
                     <button
                         onClick={onClose}
-                        className={`absolute top-4 right-4 p-2 rounded-full ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
+                        className={`absolute top-3 right-3 md:top-4 md:right-4 p-2 rounded-full ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                     >
                         <X className="w-5 h-5"/>
                     </button>
@@ -100,24 +117,24 @@ const ProjectModal = ({project, onClose, isDark}: {
                     {/* Content */}
                     <div className="space-y-6">
                         <div>
-                            <h2 className={`text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            <h2 className={`text-2xl md:text-3xl font-bold mb-3 pr-8 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                 {project.title}
                             </h2>
-                            <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-base md:text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {project.description}
                             </p>
                         </div>
 
                         {/* Tech Stack */}
                         <div>
-                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            <h3 className={`text-lg md:text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                 Technology Stack
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 {project.stack.map((tech, i) => (
                                     <span
                                         key={i}
-                                        className={`rounded-full px-4 py-2 text-sm font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
+                                        className={`rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
                                     >
                                         {tech}
                                     </span>
@@ -127,10 +144,10 @@ const ProjectModal = ({project, onClose, isDark}: {
 
                         {/* Details */}
                         <div>
-                            <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            <h3 className={`text-lg md:text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                 Project Details
                             </h3>
-                            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} leading-relaxed`}>
+                            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} leading-relaxed text-sm md:text-base`}>
                                 {project.details}
                             </p>
                         </div>
@@ -138,7 +155,7 @@ const ProjectModal = ({project, onClose, isDark}: {
                         {/* Screenshots - Only render if images array exists and has items */}
                         {project.images && project.images.length > 0 && (
                             <div>
-                                <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                <h3 className={`text-lg md:text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     Screenshots
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -171,6 +188,7 @@ function OnePagePortfolio() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const isMobile = useIsMobile();
 
     const sections = ['home', 'about', 'projects', 'contact'];
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -229,8 +247,10 @@ function OnePagePortfolio() {
         };
     }, [sections]);
 
-    // Snap scroll functionality
+    // Snap scroll functionality - DISABLED ON MOBILE
     useEffect(() => {
+        if (isMobile) return; // Disable snap scroll on mobile
+
         let isThrottled = false;
 
         const handleWheel = (e: WheelEvent) => {
@@ -290,10 +310,12 @@ function OnePagePortfolio() {
                 clearTimeout(scrollTimeoutRef.current);
             }
         };
-    }, [activeSection, isScrolling, sections]);
+    }, [activeSection, isScrolling, sections, isMobile]);
 
-    // Touch support for mobile
+    // Touch support for mobile - SIMPLIFIED
     useEffect(() => {
+        if (!isMobile) return; // Only run on mobile
+
         let touchStart = 0;
         let touchEnd = 0;
 
@@ -305,7 +327,7 @@ function OnePagePortfolio() {
             touchEnd = e.changedTouches[0].clientY;
             const distance = touchStart - touchEnd;
 
-            if (Math.abs(distance) > 50 && !isScrolling) {
+            if (Math.abs(distance) > 100 && !isScrolling) {
                 const direction = distance > 0 ? 1 : -1;
                 const newSection = Math.max(0, Math.min(sections.length - 1, activeSection + direction));
 
@@ -324,7 +346,7 @@ function OnePagePortfolio() {
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [activeSection, isScrolling, sections]);
+    }, [activeSection, isScrolling, sections, isMobile]);
 
     const skills = [
         {name: 'Laravel & PHP (Backend)', icon: Zap, level: 90},
@@ -430,27 +452,29 @@ function OnePagePortfolio() {
                 style={{scaleX}}
             />
 
-            {/* Section Indicators */}
-            <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3">
-                {sections.map((section, index) => (
-                    <motion.button
-                        key={section}
-                        onClick={() => scrollToSection(section)}
-                        whileHover={{scale: 1.5}}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            activeSection === index
-                                ? isDark ? 'bg-emerald-400 w-4 h-4' : 'bg-emerald-600 w-4 h-4'
-                                : isDark ? 'bg-white/30' : 'bg-gray-400'
-                        }`}
-                        aria-label={`Go to ${section}`}
-                    />
-                ))}
-            </div>
+            {/* Section Indicators - Hidden on mobile */}
+            {!isMobile && (
+                <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+                    {sections.map((section, index) => (
+                        <motion.button
+                            key={section}
+                            onClick={() => scrollToSection(section)}
+                            whileHover={{scale: 1.5}}
+                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                                activeSection === index
+                                    ? isDark ? 'bg-emerald-400 w-4 h-4' : 'bg-emerald-600 w-4 h-4'
+                                    : isDark ? 'bg-white/30' : 'bg-gray-400'
+                            }`}
+                            aria-label={`Go to ${section}`}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Animated Background Gradient */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <motion.div
-                    className={`absolute w-96 h-96 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`}
+                    className={`absolute w-72 md:w-96 h-72 md:h-96 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${isDark ? 'bg-emerald-600' : 'bg-emerald-400'}`}
                     animate={{
                         left: `${mousePosition.x - 192}px`,
                         top: `${mousePosition.y - 192}px`,
@@ -458,12 +482,12 @@ function OnePagePortfolio() {
                     transition={{type: "spring", damping: 50, stiffness: 150, mass: 0.5}}
                 />
                 <motion.div
-                    className={`absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-10 ${isDark ? 'bg-teal-600' : 'bg-teal-400'}`}
+                    className={`absolute top-0 right-0 w-72 md:w-96 h-72 md:h-96 rounded-full blur-3xl opacity-10 ${isDark ? 'bg-teal-600' : 'bg-teal-400'}`}
                     animate={{scale: [1, 1.2, 1], rotate: [0, 90, 0]}}
                     transition={{duration: 20, repeat: Infinity, ease: "linear"}}
                 />
                 <motion.div
-                    className={`absolute bottom-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10 ${isDark ? 'bg-green-600' : 'bg-green-400'}`}
+                    className={`absolute bottom-0 left-1/4 w-72 md:w-96 h-72 md:h-96 rounded-full blur-3xl opacity-10 ${isDark ? 'bg-green-600' : 'bg-green-400'}`}
                     animate={{scale: [1, 1.3, 1], x: [0, 100, 0]}}
                     transition={{duration: 25, repeat: Infinity, ease: "linear"}}
                 />
@@ -476,13 +500,13 @@ function OnePagePortfolio() {
                 transition={{duration: 0.5}}
                 className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-all duration-300 ${isDark ? 'bg-gray-950/80 border-white/10' : 'bg-white/80 border-gray-200'}`}
             >
-                <div className="max-w-6xl mx-auto px-4 py-4">
+                <div className="max-w-6xl mx-auto px-4 py-3 md:py-4">
                     <div className="flex items-center justify-between">
                         <motion.h1
                             initial={{opacity: 0, x: -20}}
                             animate={{opacity: 1, x: 0}}
                             transition={{delay: 0.2}}
-                            className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
+                            className={`text-lg md:text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
                         >
                             Akhtar Diwan
                         </motion.h1>
@@ -517,14 +541,14 @@ function OnePagePortfolio() {
                         </div>
 
                         {/* Theme Toggle & Mobile Menu */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 md:gap-4">
                             <motion.button
                                 whileHover={{scale: 1.1, rotate: 180}}
                                 whileTap={{scale: 0.9}}
                                 onClick={() => setIsDark(!isDark)}
                                 className={`p-2 rounded-full backdrop-blur-md ${isDark ? 'bg-white/10 text-emerald-400' : 'bg-black/10 text-emerald-600'}`}
                             >
-                                {isDark ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
+                                {isDark ? <Sun className="w-4 h-4 md:w-5 md:h-5"/> : <Moon className="w-4 h-4 md:w-5 md:h-5"/>}
                             </motion.button>
 
                             <motion.button
@@ -578,27 +602,27 @@ function OnePagePortfolio() {
                 />
             )}
 
-            {/* Scroll Container */}
-            <div className="snap-y snap-mandatory h-screen overflow-y-scroll scrollbar-hide">
+            {/* Scroll Container - Conditional snap behavior */}
+            <div className={`${isMobile ? '' : 'snap-y snap-mandatory h-screen'} overflow-y-scroll scrollbar-hide`}>
                 {/* Hero Section */}
-                <section id="home" className="snap-start snap-always h-screen relative z-10 flex items-center">
-                    <div className="max-w-6xl mx-auto px-4 w-full">
-                        <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <section id="home" className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen'} relative z-10 flex items-center pt-20 md:pt-0 px-4`}>
+                    <div className="max-w-6xl mx-auto w-full">
+                        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
                             {/* Left Content */}
-                            <StaggerContainer className="space-y-8">
-                                <div className="space-y-4">
+                            <StaggerContainer className="space-y-6 md:space-y-8">
+                                <div className="space-y-3 md:space-y-4">
                                     <StaggerItem>
-                                        <p className={`text-lg ${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-semibold tracking-wide`}>
+                                        <p className={`text-base md:text-lg ${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-semibold tracking-wide`}>
                                             Hi, I'm Akhtar Diwan
                                         </p>
                                     </StaggerItem>
                                     <StaggerItem>
-                                        <h1 className={`text-5xl lg:text-6xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} leading-tight`}>
+                                        <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} leading-tight`}>
                                             Backend Developer
                                         </h1>
                                     </StaggerItem>
                                     <StaggerItem>
-                                        <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-lg`}>
+                                        <p className={`text-base md:text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-lg`}>
                                             I specialize in building robust backend systems with Laravel, focusing on
                                             complex business logic, payments, multi-tenant architecture, and scalable
                                             APIs.
@@ -609,12 +633,12 @@ function OnePagePortfolio() {
                                 </div>
 
                                 <StaggerItem>
-                                    <div className="flex flex-wrap gap-4">
+                                    <div className="flex flex-wrap gap-3 md:gap-4">
                                         <motion.button
                                             whileHover={{scale: 1.05}}
                                             whileTap={{scale: 0.95}}
                                             onClick={() => scrollToSection('projects')}
-                                            className={`px-8 py-4 rounded-full font-semibold transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
+                                            className={`px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-sm md:text-base transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
                                         >
                                             View Projects
                                         </motion.button>
@@ -622,9 +646,9 @@ function OnePagePortfolio() {
                                             whileHover={{scale: 1.05}}
                                             whileTap={{scale: 0.95}}
                                             onClick={handleDownloadResume}
-                                            className={`flex items-center gap-2 px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
+                                            className={`flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-sm md:text-base backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
                                         >
-                                            <Download className="w-5 h-5"/>
+                                            <Download className="w-4 h-4 md:w-5 md:h-5"/>
                                             Resume
                                         </motion.button>
                                     </div>
@@ -636,20 +660,20 @@ function OnePagePortfolio() {
                                 initial={{opacity: 0, scale: 0.8, rotateY: -20}}
                                 animate={{opacity: 1, scale: 1, rotateY: 0}}
                                 transition={{duration: 0.8, delay: 0.2}}
-                                className={`relative backdrop-blur-xl rounded-3xl p-8 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-2' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-2'}`}
+                                className={`relative backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 md:p-8 border transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-2' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-2'}`}
                                 style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden', perspective: 1000}}
                             >
                                 <motion.div
                                     animate={{scale: [1, 1.2, 1]}}
                                     transition={{duration: 3, repeat: Infinity}}
-                                    className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-60"
+                                    className="absolute -top-4 -right-4 w-20 md:w-24 h-20 md:h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-60"
                                 />
 
-                                <h3 className={`text-2xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                <h3 className={`text-xl md:text-2xl font-bold mb-4 md:mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     Core Expertise
                                 </h3>
 
-                                <div className="space-y-6">
+                                <div className="space-y-4 md:space-y-6">
                                     {skills.map((skill, i) => (
                                         <motion.div
                                             key={i}
@@ -658,20 +682,20 @@ function OnePagePortfolio() {
                                             transition={{delay: 0.4 + i * 0.1}}
                                             className="space-y-2"
                                         >
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2 md:gap-3">
                                                 <skill.icon
-                                                    className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}/>
+                                                    className={`w-4 h-4 md:w-5 md:h-5 flex-shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}/>
                                                 <span
-                                                    className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                    className={`font-semibold text-sm md:text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                                     {skill.name}
                                                 </span>
                                                 <span
-                                                    className={`ml-auto ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                                                    className={`ml-auto text-sm md:text-base flex-shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
                                                     {skill.level}%
                                                 </span>
                                             </div>
                                             <div
-                                                className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}>
+                                                className={`h-1.5 md:h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}>
                                                 <motion.div
                                                     initial={{width: 0}}
                                                     animate={{width: `${skill.level}%`}}
@@ -687,9 +711,9 @@ function OnePagePortfolio() {
                                     initial={{opacity: 0}}
                                     animate={{opacity: 1}}
                                     transition={{delay: 1}}
-                                    className={`mt-8 pt-8 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}
+                                    className={`mt-6 md:mt-8 pt-6 md:pt-8 border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}
                                 >
-                                    <div className="grid grid-cols-3 gap-4 text-center">
+                                    <div className="grid grid-cols-3 gap-3 md:gap-4 text-center">
                                         {[
                                             {value: '3+', label: 'Years Exp'},
                                             {value: '20+', label: 'Projects'},
@@ -702,11 +726,11 @@ function OnePagePortfolio() {
                                                 transition={{delay: 1.2 + i * 0.1}}
                                             >
                                                 <div
-                                                    className={`text-3xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                                                    className={`text-2xl md:text-3xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
                                                     {stat.value}
                                                 </div>
                                                 <div
-                                                    className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    className={`text-xs md:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                                     {stat.label}
                                                 </div>
                                             </motion.div>
@@ -718,7 +742,7 @@ function OnePagePortfolio() {
                     </div>
 
                     {/* Scroll Down Indicator */}
-                    {activeSection === 0 && (
+                    {activeSection === 0 && !isMobile && (
                         <motion.button
                             onClick={scrollToNext}
                             initial={{opacity: 0, y: -10}}
@@ -739,36 +763,36 @@ function OnePagePortfolio() {
                 </section>
 
                 {/* About Section */}
-                <section id="about" className="snap-start snap-always h-screen relative z-10 flex items-center">
-                    <div className="max-w-6xl mx-auto px-4 w-full">
+                <section id="about" className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen'} relative z-10 flex items-center py-20 md:py-0 px-4`}>
+                    <div className="max-w-6xl mx-auto w-full">
                         <motion.h2
                             initial={{opacity: 0, y: 20}}
                             whileInView={{opacity: 1, y: 0}}
                             viewport={{once: false, margin: "-100px"}}
-                            className={`text-4xl font-bold mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                            className={`text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
                         >
                             About Me
                         </motion.h2>
 
-                        <StaggerContainer className="grid lg:grid-cols-2 gap-12">
+                        <StaggerContainer className="grid lg:grid-cols-2 gap-6 md:gap-12">
                             <StaggerItem>
                                 <div
-                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
+                                    className={`backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 md:p-8 border h-full transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
                                     style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                 >
-                                    <h3 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    <h3 className={`text-xl md:text-2xl font-bold mb-3 md:mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                         My Journey
                                     </h3>
-                                    <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <p className={`mb-3 md:mb-4 text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                         With over 3 years of experience in web development, I specialize in building and
                                         maintaining backend-heavy systems using Laravel.
                                     </p>
-                                    <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <p className={`mb-3 md:mb-4 text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                         My work focuses on complex business logic, payment and checkout flows,
                                         multi-tenant architectures, and scalable APIs that power real production
                                         applications.
                                     </p>
-                                    <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                         I've worked on long-running products where reliability, data integrity, and
                                         clean system design matter more than surface-level features. I'm also
                                         comfortable working with modern frontend stacks to ship complete, end-to-end
@@ -779,13 +803,13 @@ function OnePagePortfolio() {
 
                             <StaggerItem>
                                 <div
-                                    className={`backdrop-blur-xl rounded-3xl p-8 border h-full transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
+                                    className={`backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 md:p-8 border h-full transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 hover:border-emerald-600/40 hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-1' : 'bg-white/70 border-white/40 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-400/20 hover:-translate-y-1'}`}
                                     style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                 >
-                                    <h3 className={`text-2xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    <h3 className={`text-xl md:text-2xl font-bold mb-4 md:mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                         Technologies
                                     </h3>
-                                    <div className="flex flex-wrap gap-3">
+                                    <div className="flex flex-wrap gap-2 md:gap-3">
                                         {[
                                             'Laravel',
                                             'PHP',
@@ -810,7 +834,7 @@ function OnePagePortfolio() {
                                                 viewport={{once: false}}
                                                 transition={{delay: i * 0.05}}
                                                 whileHover={{scale: 1.1}}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
+                                                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
                                             >
                                                 {tech}
                                             </motion.span>
@@ -824,31 +848,31 @@ function OnePagePortfolio() {
 
                 {/* Projects Section */}
                 <section id="projects"
-                         className="snap-start snap-always h-screen relative z-10 flex items-center overflow-y-auto scrollbar-hide">
-                    <div className="max-w-6xl mx-auto px-4 w-full py-20">
+                         className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen overflow-y-auto'} relative z-10 flex items-center scrollbar-hide py-20 md:py-0 px-4`}>
+                    <div className="max-w-6xl mx-auto w-full">
                         <motion.h2
                             initial={{opacity: 0, y: 20}}
                             whileInView={{opacity: 1, y: 0}}
                             viewport={{once: false, margin: "-100px"}}
-                            className={`text-4xl font-bold mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                            className={`text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
                         >
                             Featured Projects
                         </motion.h2>
 
-                        <StaggerContainer className="grid gap-6 md:grid-cols-2" staggerDelay={0.15}>
+                        <StaggerContainer className="grid gap-4 md:gap-6 md:grid-cols-2" staggerDelay={0.15}>
                             {projects.map((project, i) => (
                                 <StaggerItem key={i}>
                                     <div
-                                        className={`group backdrop-blur-xl rounded-2xl p-6 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-emerald-600/50 shadow-lg shadow-emerald-600/10 hover:shadow-2xl hover:shadow-emerald-600/30 hover:-translate-y-2' : 'bg-white/70 border-white/40 hover:bg-white/90 hover:border-emerald-400/70 shadow-lg shadow-emerald-400/10 hover:shadow-2xl hover:shadow-emerald-400/30 hover:-translate-y-2'}`}
+                                        className={`group backdrop-blur-xl rounded-xl md:rounded-2xl p-5 md:p-6 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-emerald-600/50 shadow-lg shadow-emerald-600/10 hover:shadow-2xl hover:shadow-emerald-600/30 hover:-translate-y-2' : 'bg-white/70 border-white/40 hover:bg-white/90 hover:border-emerald-400/70 shadow-lg shadow-emerald-400/10 hover:shadow-2xl hover:shadow-emerald-400/30 hover:-translate-y-2'}`}
                                         style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                                     >
-                                        <h3 className={`text-xl font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                        <h3 className={`text-lg md:text-xl font-semibold mb-2 md:mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                             {project.title}
                                         </h3>
-                                        <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        <p className={`text-xs md:text-sm mb-3 md:mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                             {project.description}
                                         </p>
-                                        <div className="flex flex-wrap gap-2 mb-4">
+                                        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-4">
                                             {project.stack.map((tech, techIndex) => (
                                                 <motion.span
                                                     key={tech}
@@ -856,7 +880,7 @@ function OnePagePortfolio() {
                                                     whileInView={{opacity: 1, scale: 1}}
                                                     viewport={{once: false}}
                                                     transition={{delay: techIndex * 0.05}}
-                                                    className={`rounded-full px-3 py-1 text-xs font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
+                                                    className={`rounded-full px-2 md:px-3 py-1 text-[10px] md:text-xs font-medium ${isDark ? 'bg-emerald-600/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'}`}
                                                 >
                                                     {tech}
                                                 </motion.span>
@@ -865,10 +889,10 @@ function OnePagePortfolio() {
                                         <motion.button
                                             whileHover={{x: 5}}
                                             onClick={() => setSelectedProject(project)}
-                                            className={`inline-flex items-center gap-2 text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
+                                            className={`inline-flex items-center gap-2 text-xs md:text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}
                                         >
                                             View Details
-                                            <ExternalLink className="w-4 h-4"/>
+                                            <ExternalLink className="w-3 h-3 md:w-4 md:h-4"/>
                                         </motion.button>
                                     </div>
                                 </StaggerItem>
@@ -878,13 +902,13 @@ function OnePagePortfolio() {
                 </section>
 
                 {/* Contact Section */}
-                <section id="contact" className="snap-start snap-always h-screen relative z-10 flex items-center">
-                    <div className="max-w-4xl mx-auto px-4 w-full">
+                <section id="contact" className={`${isMobile ? 'min-h-screen' : 'snap-start snap-always h-screen'} relative z-10 flex items-center py-20 md:py-0 px-4`}>
+                    <div className="max-w-4xl mx-auto w-full">
                         <motion.h2
                             initial={{opacity: 0, y: 20}}
                             whileInView={{opacity: 1, y: 0}}
                             viewport={{once: false, margin: "-100px"}}
-                            className={`text-4xl font-bold mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
+                            className={`text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
                         >
                             Get In Touch
                         </motion.h2>
@@ -894,36 +918,36 @@ function OnePagePortfolio() {
                             whileInView={{opacity: 1, scale: 1}}
                             viewport={{once: false, margin: "-100px"}}
                             transition={{duration: 0.5}}
-                            className={`backdrop-blur-xl rounded-3xl p-8 md:p-12 border transition-all duration-300 cursor-pointer ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-1' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-1'}`}
+                            className={`backdrop-blur-xl rounded-2xl md:rounded-3xl p-6 md:p-12 border transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 shadow-2xl shadow-emerald-600/20 hover:shadow-emerald-600/40 hover:border-emerald-600/40 hover:-translate-y-1' : 'bg-white/70 border-white/40 shadow-2xl shadow-emerald-400/20 hover:shadow-emerald-400/40 hover:border-emerald-400/60 hover:-translate-y-1'}`}
                             style={{transform: 'translateZ(0)', backfaceVisibility: 'hidden'}}
                         >
-                            <p className={`text-center text-lg mb-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-center text-sm md:text-lg mb-6 md:mb-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                 I'm open to working on backend-heavy web applications, scalable systems, and long-term
                                 product development where reliability and clean architecture matter.
                             </p>
 
-                            <div className="flex flex-wrap justify-center gap-4 mb-8">
+                            <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-6 md:mb-8">
                                 <motion.a
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}
                                     href="mailto:diwanakhtar34@gmail.com"
-                                    className={`flex items-center gap-3 px-8 py-4 rounded-full font-semibold transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
+                                    className={`flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-sm md:text-base transition-all duration-300 ${isDark ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/50' : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50'}`}
                                 >
-                                    <Mail className="w-5 h-5"/>
+                                    <Mail className="w-4 h-4 md:w-5 md:h-5"/>
                                     Email Me
                                 </motion.a>
                                 <motion.button
                                     whileHover={{scale: 1.05}}
                                     whileTap={{scale: 0.95}}
                                     onClick={handleDownloadResume}
-                                    className={`flex items-center gap-3 px-8 py-4 rounded-full font-semibold backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
+                                    className={`flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-sm md:text-base backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20' : 'bg-black/5 text-gray-900 border border-black/10 hover:bg-black/10'}`}
                                 >
-                                    <Download className="w-5 h-5"/>
+                                    <Download className="w-4 h-4 md:w-5 md:h-5"/>
                                     Download Resume
                                 </motion.button>
                             </div>
 
-                            <div className="flex justify-center gap-4">
+                            <div className="flex justify-center gap-3 md:gap-4">
                                 {[
                                     {icon: Github, href: 'https://github.com/Akhtar13', label: 'GitHub'},
                                     {icon: Linkedin, href: 'https://www.linkedin.com/in/akhtar-diwan-b69413237', label: 'LinkedIn'},
@@ -937,10 +961,10 @@ function OnePagePortfolio() {
                                         href={social.href}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`p-4 rounded-full backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-emerald-400 hover:bg-white/20' : 'bg-black/5 text-emerald-600 hover:bg-black/10'}`}
+                                        className={`p-3 md:p-4 rounded-full backdrop-blur-md transition-all duration-300 ${isDark ? 'bg-white/10 text-emerald-400 hover:bg-white/20' : 'bg-black/5 text-emerald-600 hover:bg-black/10'}`}
                                         aria-label={social.label}
                                     >
-                                        <social.icon className="w-6 h-6"/>
+                                        <social.icon className="w-5 h-5 md:w-6 md:h-6"/>
                                     </motion.a>
                                 ))}
                             </div>
@@ -951,9 +975,9 @@ function OnePagePortfolio() {
                             initial={{opacity: 0}}
                             whileInView={{opacity: 1}}
                             viewport={{once: false}}
-                            className="mt-12 text-center"
+                            className="mt-8 md:mt-12 text-center"
                         >
-                            <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-xs md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                 © 2026 Akhtar Diwan. Built with Next.js & Tailwind CSS
                             </p>
                         </motion.div>
